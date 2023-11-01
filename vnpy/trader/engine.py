@@ -20,7 +20,11 @@ from .event import (
     EVENT_ACCOUNT,
     EVENT_CONTRACT,
     EVENT_LOG,
-    EVENT_QUOTE
+    EVENT_QUOTE,
+    # hxxjava add start
+    EVENT_MARGIN,
+    EVENT_COMMISSION,
+    # hxxjava add end
 )
 from .gateway import BaseGateway
 from .object import (
@@ -38,7 +42,11 @@ from .object import (
     PositionData,
     AccountData,
     ContractData,
-    Exchange
+    Exchange,
+    # hxxjava add start
+    MarginData,
+    CommissionData,
+    # hxxjava add end
 )
 from .setting import SETTINGS
 from .utility import get_folder_path, TRADER_DIR
@@ -351,6 +359,10 @@ class OmsEngine(BaseEngine):
         self.positions: Dict[str, PositionData] = {}
         self.accounts: Dict[str, AccountData] = {}
         self.contracts: Dict[str, ContractData] = {}
+        #  hxxjava add start
+        self.margins = {}
+        self.commissions = {}
+        #  hxxjava add start
         self.quotes: Dict[str, QuoteData] = {}
 
         self.active_orders: Dict[str, OrderData] = {}
@@ -393,7 +405,25 @@ class OmsEngine(BaseEngine):
         self.event_engine.register(EVENT_POSITION, self.process_position_event)
         self.event_engine.register(EVENT_ACCOUNT, self.process_account_event)
         self.event_engine.register(EVENT_CONTRACT, self.process_contract_event)
+
+        #  hxxjava add start
+        self.event_engine.register(EVENT_COMMISSION, self.process_commission_event)
+        self.event_engine.register(EVENT_MARGIN, self.process_margin_event)
+        #  hxxjava add end
+
         self.event_engine.register(EVENT_QUOTE, self.process_quote_event)
+
+    #  hxxjava add start
+    def process_margin_event(self, event: Event) -> None:
+        margin:MarginData = event.data
+        # 以大写为键值
+        self.margins[margin.symbol.upper()] = margin
+
+    def process_commission_event(self, event: Event) -> None:
+        commission:CommissionData = event.data
+        # 以大写为键值
+        self.commissions[commission.symbol.upper()] = commission
+    #  hxxjava add end
 
     def process_tick_event(self, event: Event) -> None:
         """"""

@@ -12,3 +12,8 @@ EVENT_ACCOUNT = "eAccount."
 EVENT_QUOTE = "eQuote."
 EVENT_CONTRACT = "eContract."
 EVENT_LOG = "eLog"
+# hxxjava add start
+EVENT_STRATEGY_ACCOUNT = "eStrategyAccount."
+EVENT_MARGIN = "eMargin."
+EVENT_COMMISSION = "eCommission."
+# hxxjava add end

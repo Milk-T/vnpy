@@ -188,6 +188,11 @@ class PositionData(BaseData):
     pnl: float = 0
     yd_volume: float = 0
 
+    # start add open-cost
+    open_cost: float = 0
+    open_price: float = 0
+    # end add open-cost
+
     def __post_init__(self) -> None:
         """"""
         self.vt_symbol: str = f"{self.symbol}.{self.exchange.value}"
@@ -205,6 +210,8 @@ class AccountData(BaseData):
 
     balance: float = 0
     frozen: float = 0
+
+    curr_margin: float = 0
 
     def __post_init__(self) -> None:
         """"""
@@ -251,6 +258,18 @@ class ContractData(BaseData):
     option_expiry: datetime = None
     option_portfolio: str = ""
     option_index: str = ""          # for identifying options with same strike price
+
+    # hxxjava add start
+    max_market_order_volume: int = 0    # 市价单最大下单量
+    min_market_order_volume: int = 0    # 市价单最小下单量
+    max_limit_order_volume: int = 0     # 限价单最大下单量
+    min_limit_order_volume: int = 0     # 限价单最小下单量
+    open_date : str = ""            # 上市日
+    expire_date : str = ""           # 到期日
+    is_trading : bool = False       # 当前是否交易
+    long_margin_ratio:float = 0      # 多头保证金率
+    short_margin_ratio:float = 0    # 空头保证金率
+    # hxxjava add end
 
     def __post_init__(self) -> None:
         """"""
@@ -421,3 +440,73 @@ class QuoteRequest:
             gateway_name=gateway_name,
         )
         return quote
+
+# hxxjava add start
+@dataclass
+class StrategyAccountData(BaseData):
+    """
+    Strategy account data contains information about money, available .
+    """
+    strategy_name: str      # 策略名称
+    capital:float = 0.0     # 本金
+    money: float = 0.0      # 权益
+    margin:float = 0.0      # 保证金
+    available: float = 0.0  # 可以资金
+    commission: float = 0.0 # 手续费
+@dataclass
+class MarginData(BaseData):
+    """
+    Margin rate data for the contract .
+    """
+    symbol: str
+    exchange: str = ""                  # 可能有空
+    long_margin_rate:float = 0.0        # 多头保证金率
+    long_margin_perlot:float = 0.0      # 多头每手保证金
+    short_margin_rate:float = 0.0       # 空头保证金率
+    short_margin_perlot:float = 0.0     # 空头每手保证金
+    is_ralative:bool = False            # 是否相对交易所收取
+
+    def __post_init__(self):
+        """"""
+        self.vt_symbol = f"{self.symbol}.{self.exchange}"
+@dataclass
+class CommissionData(BaseData):
+    """
+    Margin rate data for the contract .
+    """
+    symbol: str
+    exchange: str = ""                    # 可能有空
+    open_ratio_bymoney:float = 0.0        # 开仓手续费率
+    open_ratio_byvolume:float = 0.0       # 开仓手续费
+    close_ratio_bymoney:float = 0.0       # 平仓手续费率
+    close_ratio_byvolume:float = 0.0      # 平仓手续费
+    close_today_ratio_bymoney:float=0.0    # 平今手续费率
+    close_today_ratio_byvolume:float=0.0   # 平今手续费
+
+    def __post_init__(self):
+        """"""
+        self.vt_symbol = f"{self.symbol}.{self.exchange}"
+@dataclass
+class MarginRequest:
+    """
+    Request sending to specific margin rate for a contract.
+    """
+    symbol: str
+    exchange: Exchange
+
+    def __post_init__(self):
+        """"""
+        self.vt_symbol = f"{self.symbol}.{self.exchange.value}"
+
+@dataclass
+class CommissionRequest:
+    """
+    Request sending to specific commission for a contract.
+    """
+    symbol: str
+    exchange: Exchange
+
+    def __post_init__(self):
+        """"""
+        self.vt_symbol = f"{self.symbol}.{self.exchange.value}"
+# hxxjava add end

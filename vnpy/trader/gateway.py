@@ -12,6 +12,10 @@ from .event import (
     EVENT_CONTRACT,
     EVENT_LOG,
     EVENT_QUOTE,
+    # hxxjava add start
+    EVENT_MARGIN,
+    EVENT_COMMISSION,
+    # hxxjava add end
 )
 from .object import (
     TickData,
@@ -28,7 +32,11 @@ from .object import (
     HistoryRequest,
     QuoteRequest,
     Exchange,
-    BarData
+    BarData,
+    # hxxjava add start
+    MarginData,
+    CommissionData,
+    # hxxjava add end
 )
 
 
@@ -151,6 +159,20 @@ class BaseGateway(ABC):
         Contract event push.
         """
         self.on_event(EVENT_CONTRACT, contract)
+
+    # hxxjava add start
+    def on_margin(self, margin: MarginData) -> None:
+        """
+        Margin event push.
+        """
+        self.on_event(EVENT_MARGIN,margin)
+
+    def on_commission(self, commission: CommissionData) -> None:
+        """
+        Commission event push.
+        """
+        self.on_event(EVENT_COMMISSION, commission)
+    # hxxjava add end
 
     def write_log(self, msg: str) -> None:
         """
